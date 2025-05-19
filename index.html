@@ -19,12 +19,12 @@
       100% { background-color: #e8f5e9; }
     }
     h1 {
-      font-size: 48px;
+      font-size: 60px;
       font-weight: bold;
-      animation: rainbowBlink 1s infinite;
+      animation: rainbowBlink 0.5s infinite;
     }
     #subtitle {
-      font-size: 24px;
+      font-size: 28px;
       animation: rainbowBlink 1s infinite;
     }
     @keyframes rainbowBlink {
@@ -69,7 +69,7 @@
   <textarea id="ttsText" placeholder="Write something..."></textarea><br />
   <select id="voiceSelect"></select><br />
   <button onclick="speakText()" class="button-colored">Play</button>  <h2>Speech to Text (STT)</h2>
-  <input type="file" accept="audio/*" id="audioFile" />
+  <input type="file" accept="audio/*" id="audioFile" /><br />
   <button onclick="startRecognition()" class="button-colored">Start Voice Recognition</button><br />
   <textarea id="sttResult" placeholder="Recognized text..." readonly></textarea><br />
   <button onclick="copyText()" class="button-colored" style="float: right;">Copy Text</button>  <footer>
@@ -117,7 +117,6 @@
         if (progress >= 100) clearInterval(interval);
       }, 200);
 
-      // Simulated STT result (replace with real STT API for production)
       setTimeout(() => {
         clearInterval(interval);
         document.getElementById('sttResult').value = "(Simulated) Hello, this is the transcribed audio text.";
