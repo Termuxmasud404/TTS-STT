@@ -23,21 +23,24 @@
 <body class="text-white p-6" id="mainBody">
   <div class="max-w-3xl mx-auto text-center">
     <img src="https://github.com/Termuxmasud404/The-Dream-Chaser-By-Masud/raw/main/masud.jpg" alt="Masud Rana" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-white" />
-    <h1 class="text-4xl md:text-6xl font-extrabold mb-6 blink">The Dream Chaser: TTS & STT</h1>
+    <h1 class="text-6xl md:text-8xl font-extrabold mb-6 blink">The Dream Chaser: TTS & STT</h1>
   </div>  <div class="max-w-3xl mx-auto">
     <!-- Text to Speech -->
     <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-6">
       <textarea id="text-input" class="w-full p-4 rounded-xl bg-gray-100 dark:bg-gray-700 text-black" rows="4" placeholder="Type something to hear..."></textarea>
       <div class="flex flex-wrap gap-2 mt-4">
-        <button onclick="speakText()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Play</button>
         <select id="voiceSelect" class="px-4 py-2 rounded-xl"></select>
+        <button onclick="speakText()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Play</button>
       </div>
     </div><!-- Speech to Text -->
 <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
   <h2 class="text-2xl font-semibold mb-2">Audio to Text</h2>
   <div class="flex gap-2 flex-wrap mb-4">
-    <button onclick="startRecognition()" id="record-btn" class="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700">Start Voice Recognition</button>
     <input type="file" id="audioFile" accept="audio/*" onchange="importAudio(event)" class="text-white" />
+    <button onclick="startRecognition()" id="record-btn" class="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700">Start Voice Recognition</button>
+  </div>
+  <div id="progress-container" class="w-full h-4 bg-gray-300 rounded mt-2 hidden">
+    <div id="progress-bar" class="h-4 bg-blue-600 rounded" style="width: 0%"></div>
   </div>
   <div id="speech-result" class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl min-h-[100px] text-black">Speech text will appear here...</div>
   <div class="flex justify-end mt-2">
@@ -61,7 +64,8 @@
       voices = speechSynthesis.getVoices();
       voiceSelect.innerHTML = "";
       voices.forEach((voice, index) => {
-        if (voice.name.toLowerCase().includes("female") || voice.name.toLowerCase().includes("male") || voice.name.toLowerCase().includes("woman") || voice.name.toLowerCase().includes("man") || voice.name.toLowerCase().includes("girl") || voice.name.toLowerCase().includes("boy")) {
+        const name = voice.name.toLowerCase();
+        if (name.includes("male") || name.includes("man") || name.includes("boy") || name.includes("female") || name.includes("woman") || name.includes("girl")) {
           const option = document.createElement("option");
           option.value = index;
           option.textContent = `${voice.name} (${voice.lang})`;
@@ -91,6 +95,8 @@
     function startRecognition() {
       const resultBox = document.getElementById("speech-result");
       const recordBtn = document.getElementById("record-btn");
+      const progressBar = document.getElementById("progress-bar");
+      const progressContainer = document.getElementById("progress-container");
 
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognition.lang = "en-US";
@@ -99,16 +105,30 @@
       recordBtn.disabled = true;
       recordBtn.textContent = "Listening...";
 
+      progressContainer.classList.remove("hidden");
+      let progress = 0;
+      const interval = setInterval(() => {
+        if (progress < 100) {
+          progress += 1;
+          progressBar.style.width = progress + "%";
+        }
+      }, 50);
+
       recognition.onresult = (event) => {
+        clearInterval(interval);
+        progressBar.style.width = "100%";
         resultBox.textContent = event.results[0][0].transcript;
         recordBtn.disabled = false;
         recordBtn.textContent = "Start Voice Recognition";
+        setTimeout(() => progressContainer.classList.add("hidden"), 1000);
       };
 
       recognition.onerror = (event) => {
+        clearInterval(interval);
         resultBox.textContent = "Error: " + event.error;
         recordBtn.disabled = false;
         recordBtn.textContent = "Start Voice Recognition";
+        setTimeout(() => progressContainer.classList.add("hidden"), 1000);
       };
 
       recognition.start();
