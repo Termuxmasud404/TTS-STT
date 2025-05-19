@@ -7,11 +7,12 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(120deg, #fce4ec, #e0f7fa, #ede7f6, #e8f5e9);
-      background-size: 600% 600%;
-      animation: gradientBG 20s ease infinite;
+      animation: backgroundColorChange 20s infinite alternate;
       text-align: center;
       padding: 20px;
+      background: linear-gradient(135deg, #e0f7fa, #fce4ec, #ede7f6, #e8f5e9);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
     }
     @keyframes gradientBG {
       0% {background-position: 0% 50%;}
@@ -21,11 +22,11 @@
     h1 {
       font-size: 48px;
       font-weight: bold;
-      animation: rainbowBlink 1s infinite;
+      animation: rainbowBlink 1.5s infinite;
     }
     #subtitle {
       font-size: 24px;
-      animation: rainbowBlink 1s infinite;
+      animation: rainbowBlink 2s infinite;
     }
     @keyframes rainbowBlink {
       0% { color: red; }
@@ -39,36 +40,32 @@
       width: 90%;
       height: 100px;
       font-size: 18px;
-      margin: 10px auto;
+      margin-top: 10px;
     }
     select, button, input[type="file"] {
-      padding: 10px 20px;
+      padding: 10px;
       margin: 10px;
       font-size: 16px;
+      border-radius: 8px;
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s, color 0.3s;
     }
     button:hover {
-      background-color: #00796b;
+      background-color: #007bff;
       color: white;
-    }
-    button:active {
-      background-color: #004d40;
     }
     footer {
       margin-top: 40px;
       font-size: 16px;
-      color: #333;
     }
     #developer {
       font-weight: bold;
-      animation: rainbowBlink 2s infinite;
+      animation: rainbowBlink 3s infinite;
     }
     .button-colored {
       background-color: #6200ea;
       color: white;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -77,10 +74,13 @@
   <h1>The Dream Chaser</h1>
   <div id="subtitle">TTS & STT</div>  <h2>Text to Speech (TTS)</h2>
   <textarea id="ttsText" placeholder="Write something..."></textarea><br />
-  <select id="voiceSelect"></select><br />
+  <select id="voiceType">
+    <option value="male">Male Voice</option>
+    <option value="female">Female Voice</option>
+  </select><br />
   <button onclick="speakText()" class="button-colored">Play</button>  <h2>Speech to Text (STT)</h2>
-  <input type="file" accept="audio/*" id="audioFile" /><br />
-  <button onclick="startRecognition()" class="button-colored">Start Voice Recognition</button>
+  <input type="file" accept="audio/*" id="audioFile" />
+  <button onclick="startRecognition()" class="button-colored">Start Voice Recognition</button><br />
   <textarea id="sttResult" placeholder="Recognized text..." readonly></textarea><br />
   <button onclick="copyText()" class="button-colored" style="float: right;">Copy Text</button>  <footer>
     <a href="https://www.facebook.com/profile.php?id=100078423821878" target="_blank">
@@ -89,36 +89,33 @@
     <div id="developer">Developer By Masud Rana</div>
     <div>© 2025 The Dream Chaser Zone | Created by Termuxmasud404</div>
   </footer>  <script>
-    const voiceSelect = document.getElementById('voiceSelect');
-
-    function populateVoices() {
-      const voices = speechSynthesis.getVoices();
-      voiceSelect.innerHTML = '';
-      voices.forEach((voice) => {
-        const option = document.createElement('option');
-        option.value = voice.name;
-        option.textContent = `${voice.name} (${voice.lang})`;
-        voiceSelect.appendChild(option);
-      });
-    }
-
-    window.speechSynthesis.onvoiceschanged = populateVoices;
-    populateVoices();
-
-    function speakText() {
+    async function speakText() {
       const text = document.getElementById('ttsText').value;
-      const utterance = new SpeechSynthesisUtterance(text);
-      const selectedVoiceName = voiceSelect.value;
-      const voices = speechSynthesis.getVoices();
-      const selectedVoice = voices.find(v => v.name === selectedVoiceName);
-      if (selectedVoice) utterance.voice = selectedVoice;
-      speechSynthesis.speak(utterance);
+      const voiceType = document.getElementById('voiceType').value;
+      const url = voiceType === 'male'
+        ? 'https://api.fake-voice.com/male'  // Replace with real API endpoint
+        : 'https://api.fake-voice.com/female';
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ text })
+        });
+        const data = await response.blob();
+        const audioUrl = URL.createObjectURL(data);
+        const audio = new Audio(audioUrl);
+        audio.play();
+      } catch (error) {
+        alert("Failed to fetch voice audio.");
+      }
     }
 
     function startRecognition() {
       const file = document.getElementById('audioFile').files[0];
       if (!file) return alert("Please upload an audio file");
-
       document.getElementById('sttResult').value = "Listening...";
       let progress = 0;
       const interval = setInterval(() => {
@@ -127,7 +124,7 @@
         if (progress >= 100) clearInterval(interval);
       }, 200);
 
-      // Placeholder for real STT API call
+      // Simulated result
       setTimeout(() => {
         clearInterval(interval);
         document.getElementById('sttResult').value = "(Simulated) Hello, this is the transcribed audio text.";
