@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Dream Chaser: TTS & STT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-black text-gray-800 dark:text-white p-6">
+
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-4xl font-bold mb-6 text-center">The Dream Chaser: TTS & STT</h1>
+
+    <!-- Text to Speech -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-6">
+      <h2 class="text-2xl font-semibold mb-2">Text to Audio</h2>
+      <textarea id="text-input" class="w-full p-4 rounded-xl bg-gray-100 dark:bg-gray-700" rows="4" placeholder="Type something to hear..."></textarea>
+      <button onclick="speakText()" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Play Audio</button>
+    </div>
+
+    <!-- Speech to Text -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
+      <h2 class="text-2xl font-semibold mb-2">Audio to Text</h2>
+      <button onclick="startRecognition()" id="record-btn" class="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700">Start Voice Recognition</button>
+      <div id="speech-result" class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl min-h-[100px]">Speech text will appear here...</div>
+    </div>
+  </div>
+
+  <script>
+    function speakText() {
+      const text = document.getElementById("text-input").value;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function startRecognition() {
+      const resultBox = document.getElementById("speech-result");
+      const recordBtn = document.getElementById("record-btn");
+
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+
+      recordBtn.disabled = true;
+      recordBtn.textContent = "Listening...";
+
+      recognition.onresult = (event) => {
+        resultBox.textContent = event.results[0][0].transcript;
+        recordBtn.disabled = false;
+        recordBtn.textContent = "Start Voice Recognition";
+      };
+
+      recognition.onerror = (event) => {
+        resultBox.textContent = "Error: " + event.error;
+        recordBtn.disabled = false;
+        recordBtn.textContent = "Start Voice Recognition";
+      };
+
+      recognition.start();
+    }
+  </script>
+</body>
+</html>
