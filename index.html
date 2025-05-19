@@ -1,37 +1,84 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
+<!DOCTYPE html><html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Dream Chaser: TTS & STT</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .blink {
+      animation: blink 1s infinite;
+    }
+    body {
+      transition: background 3s ease;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-100 to-white dark:from-gray-900 dark:to-black text-gray-800 dark:text-white p-6">
-
-  <div class="max-w-3xl mx-auto">
-    <h1 class="text-4xl font-bold mb-6 text-center">The Dream Chaser: TTS & STT</h1>
-
+<body class="text-white p-6" id="mainBody">
+  <div class="max-w-3xl mx-auto text-center">
+    <h1 class="text-5xl font-extrabold mb-6 blink" style="color: #ff6ec7; text-shadow: 2px 2px #000;">Masud Rana: The Dream Chaser</h1>
+  </div>  <div class="max-w-3xl mx-auto">
     <!-- Text to Speech -->
     <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-6">
       <h2 class="text-2xl font-semibold mb-2">Text to Audio</h2>
-      <textarea id="text-input" class="w-full p-4 rounded-xl bg-gray-100 dark:bg-gray-700" rows="4" placeholder="Type something to hear..."></textarea>
-      <button onclick="speakText()" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Play Audio</button>
-    </div>
-
-    <!-- Speech to Text -->
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
-      <h2 class="text-2xl font-semibold mb-2">Audio to Text</h2>
-      <button onclick="startRecognition()" id="record-btn" class="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700">Start Voice Recognition</button>
-      <div id="speech-result" class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl min-h-[100px]">Speech text will appear here...</div>
-    </div>
+      <textarea id="text-input" class="w-full p-4 rounded-xl bg-gray-100 dark:bg-gray-700 text-black" rows="4" placeholder="Type something to hear..."></textarea>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <button onclick="speakText()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Play</button>
+        <button onclick="downloadAudio()" class="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700">Download Audio</button>
+        <button onclick="copyText()" class="px-4 py-2 bg-yellow-500 text-black rounded-xl hover:bg-yellow-600">Copy Text</button>
+        <select id="voiceSelect" class="px-4 py-2 rounded-xl">
+          <option value="male">Male Voice</option>
+          <option value="female">Female Voice</option>
+          <option value="child">Child Voice</option>
+          <option value="old">Old Voice</option>
+        </select>
+      </div>
+    </div><!-- Speech to Text -->
+<div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
+  <h2 class="text-2xl font-semibold mb-2">Audio to Text</h2>
+  <div class="flex gap-2 flex-wrap">
+    <button onclick="startRecognition()" id="record-btn" class="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700">Start Voice Recognition</button>
+    <input type="file" id="audioFile" accept="audio/*" onchange="importAudio()" class="text-white" />
   </div>
+  <div id="speech-result" class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl min-h-[100px] text-black">Speech text will appear here...</div>
+</div>
 
-  <script>
+  </div>  <script>
+    const voiceSelect = document.getElementById("voiceSelect");
+
     function speakText() {
       const text = document.getElementById("text-input").value;
       const utterance = new SpeechSynthesisUtterance(text);
+      const selected = voiceSelect.value;
+
+      const voices = speechSynthesis.getVoices();
+      if (selected === "male") {
+        utterance.voice = voices.find(v => v.name.includes("Male") || v.name.includes("Google UK English Male")) || null;
+      } else if (selected === "female") {
+        utterance.voice = voices.find(v => v.name.includes("Female") || v.name.includes("Google UK English Female")) || null;
+      } else if (selected === "child") {
+        utterance.pitch = 2;
+        utterance.rate = 1.4;
+      } else if (selected === "old") {
+        utterance.pitch = 0.5;
+        utterance.rate = 0.8;
+      }
+
       utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
+    }
+
+    function downloadAudio() {
+      alert("Sorry! Direct audio download is not supported in browser TTS.");
+    }
+
+    function copyText() {
+      const text = document.getElementById("text-input").value;
+      navigator.clipboard.writeText(text);
+      alert("Text copied!");
     }
 
     function startRecognition() {
@@ -59,6 +106,17 @@
 
       recognition.start();
     }
-  </script>
-</body>
+
+    function importAudio() {
+      alert("Audio file import is not supported in browser directly. Use voice input instead.");
+    }
+
+    // Dynamic Background Change
+    const colors = ["#1e3a8a", "#4c1d95", "#0f766e", "#9d174d", "#7c3aed"];
+    let i = 0;
+    setInterval(() => {
+      document.getElementById("mainBody").style.backgroundColor = colors[i];
+      i = (i + 1) % colors.length;
+    }, 4000);
+  </script></body>
 </html>
