@@ -2,139 +2,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Dream Chaser</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>The Dream Chaser TTS & STT</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      animation: backgroundColorChange 10s infinite alternate;
       text-align: center;
-      transition: background-color 2s;
+      padding: 20px;
+    }
+    @keyframes backgroundColorChange {
+      0% { background-color: #f6f9fc; }
+      25% { background-color: #e0f7fa; }
+      50% { background-color: #fce4ec; }
+      75% { background-color: #ede7f6; }
+      100% { background-color: #e8f5e9; }
     }
     h1 {
-      font-size: 3rem;
+      font-size: 48px;
       font-weight: bold;
-      animation: colorChange 1s infinite;
+      animation: rainbowBlink 1s infinite;
     }
-    h2 {
-      font-size: 2rem;
-      margin-top: -10px;
-      animation: colorChange 1s infinite;
+    #subtitle {
+      font-size: 24px;
+      animation: rainbowBlink 1s infinite;
     }
-    @keyframes colorChange {
+    @keyframes rainbowBlink {
       0% { color: red; }
-      25% { color: orange; }
-      50% { color: green; }
-      75% { color: blue; }
+      20% { color: orange; }
+      40% { color: yellow; }
+      60% { color: green; }
+      80% { color: blue; }
       100% { color: violet; }
     }
-    @keyframes rainbow {
-      0% { background-color: #ff0000; }
-      25% { background-color: #00ff00; }
-      50% { background-color: #0000ff; }
-      75% { background-color: #ffff00; }
-      100% { background-color: #ff00ff; }
+    textarea {
+      width: 90%;
+      height: 100px;
+      font-size: 18px;
     }
-    .rainbow-text {
-      animation: colorChange 1s infinite;
-    }
-    .rainbow-bg {
-      animation: rainbow 10s infinite;
-    }
-    #masud-img {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      margin: 10px auto;
-    }
-    select, button, input {
-      margin: 5px;
+    select, button, input[type="file"] {
       padding: 10px;
+      margin: 10px;
       font-size: 16px;
     }
-    #output {
-      white-space: pre-wrap;
-      margin: 20px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      min-height: 100px;
+    footer {
+      margin-top: 40px;
+      font-size: 16px;
+      color: #333;
     }
-    .footer {
-      margin-top: 30px;
-    }
-    .footer p, .footer a {
-      margin: 5px;
+    #developer {
       font-weight: bold;
+      animation: rainbowBlink 2s infinite;
     }
-    .rainbow-footer {
-      animation: colorChange 1s infinite;
+    .button-colored {
+      background-color: #6200ea;
+      color: white;
+      border: none;
+      border-radius: 5px;
     }
   </style>
 </head>
-<body class="rainbow-bg">
-  <img id="masud-img" src="https://github.com/Termuxmasud404/The-Dream-Chaser-By-Masud/blob/main/masud.jpg?raw=true" alt="Masud Rana" />
+<body>
+  <img src="https://github.com/Termuxmasud404/The-Dream-Chaser-By-Masud/blob/main/masud.jpg?raw=true" width="150" style="border-radius: 50%; margin-bottom: 10px;" />
   <h1>The Dream Chaser</h1>
-  <h2>TTS & STT</h2>  <input type="file" id="audioFile" accept="audio/*" />
-  <br>
-  <button onclick="startRecognition()">Start Voice Recognition</button>
-  <div id="progress"></div>
-  <div id="output"></div>
-  <button onclick="copyText()">Copy Text</button>  <hr>  <textarea id="text-to-speak" rows="4" cols="50" placeholder="Enter text to speak..."></textarea>  <br>
-  <label for="voiceSelect">Select Voice:</label>
-  <select id="voiceSelect">
-    <option>Male Voice 1</option>
-    <option>Male Voice 2</option>
-    <option>Male Voice 3</option>
-    <option>Male Voice 4</option>
-    <option>Male Voice 5</option>
-    <option>Female Voice 1</option>
-    <option>Female Voice 2</option>
-    <option>Female Voice 3</option>
-    <option>Female Voice 4</option>
-    <option>Female Voice 5</option>
-  </select>
-  <br>
-  <button onclick="speakText()">Play Audio</button>  <div class="footer">
+  <div id="subtitle">TTS & STT</div>  <h2>Text to Speech (TTS)</h2>
+  <textarea id="ttsText" placeholder="Write something..."></textarea><br />
+  <select id="voiceSelect"></select><br />
+  <button onclick="speakText()" class="button-colored">Play</button>  <h2>Speech to Text (STT)</h2>
+  <input type="file" accept="audio/*" id="audioFile" />
+  <button onclick="startRecognition()" class="button-colored">Start Voice Recognition</button><br />
+  <textarea id="sttResult" placeholder="Recognized text..." readonly></textarea><br />
+  <button onclick="copyText()" class="button-colored" style="float: right;">Copy Text</button>  <footer>
     <a href="https://www.facebook.com/profile.php?id=100078423821878" target="_blank">
-      <button style="background: blue; color: white; padding: 10px;">Visit My Facebook</button>
-    </a>
-    <p class="rainbow-text">Developer By Masud Rana</p>
-    <p>© 2025 The Dream Chaser Zone | Created by Termuxmasud404</p>
-  </div>  <script>
-    function copyText() {
-      const text = document.getElementById("output").innerText;
-      navigator.clipboard.writeText(text).then(() => alert("Text copied!"));
+      <button class="button-colored">Visit My Facebook</button>
+    </a><br />
+    <div id="developer">Developer By Masud Rana</div>
+    <div>© 2025 The Dream Chaser Zone | Created by Termuxmasud404</div>
+  </footer>  <script>
+    const voiceSelect = document.getElementById('voiceSelect');
+
+    function populateVoices() {
+      const voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('bn')).forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = voice.name;
+        option.text = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+      });
+    }
+
+    populateVoices();
+    window.speechSynthesis.onvoiceschanged = populateVoices;
+
+    function speakText() {
+      const text = document.getElementById('ttsText').value;
+      const utterance = new SpeechSynthesisUtterance(text);
+      const selectedVoiceName = voiceSelect.value;
+      const voices = speechSynthesis.getVoices();
+      const selectedVoice = voices.find(v => v.name === selectedVoiceName);
+      if (selectedVoice) utterance.voice = selectedVoice;
+      speechSynthesis.speak(utterance);
     }
 
     function startRecognition() {
-      const output = document.getElementById("output");
-      const progress = document.getElementById("progress");
-      output.innerText = "Listening...";
-      let count = 0;
-      let interval = setInterval(() => {
-        count += 1;
-        progress.innerText = `Loading: ${count}%`;
-        if (count >= 100) {
-          clearInterval(interval);
-          output.innerText = "This is a sample result from STT API.";
-          progress.innerText = "";
-        }
-      }, 30);
+      const file = document.getElementById('audioFile').files[0];
+      if (!file) return alert("Please upload an audio file");
+
+      document.getElementById('sttResult').value = "Listening...";
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 5;
+        document.getElementById('sttResult').value = `Processing: ${progress}%`;
+        if (progress >= 100) clearInterval(interval);
+      }, 200);
+
+      // Simulated STT result (replace with real STT API for production)
+      setTimeout(() => {
+        clearInterval(interval);
+        document.getElementById('sttResult').value = "(Simulated) Hello, this is the transcribed audio text.";
+      }, 4000);
     }
 
-    function speakText() {
-      const text = document.getElementById("text-to-speak").value;
-      const voiceOption = document.getElementById("voiceSelect").value;
-      const utterance = new SpeechSynthesisUtterance(text);
-      let voices = window.speechSynthesis.getVoices();
-
-      let matchVoice = voices.find(v =>
-        v.name.toLowerCase().includes(voiceOption.toLowerCase().split(" ")[1])
-      );
-
-      if (matchVoice) utterance.voice = matchVoice;
-
-      window.speechSynthesis.speak(utterance);
+    function copyText() {
+      const result = document.getElementById('sttResult');
+      result.select();
+      document.execCommand("copy");
     }
   </script></body>
 </html>
