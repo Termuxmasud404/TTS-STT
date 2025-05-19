@@ -27,13 +27,13 @@
       <textarea id="text-input" class="w-full p-4 rounded-xl bg-gray-100 dark:bg-gray-700 text-black" rows="4" placeholder="Type something to hear..."></textarea>
       <div class="flex flex-wrap gap-2 mt-4">
         <button onclick="speakText()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Play</button>
-        <button onclick="downloadAudio()" class="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700">Download Audio</button>
-        <button onclick="copyText()" class="px-4 py-2 bg-yellow-500 text-black rounded-xl hover:bg-yellow-600">Copy Text</button>
         <select id="voiceSelect" class="px-4 py-2 rounded-xl">
-          <option value="male">Male Voice</option>
-          <option value="female">Female Voice</option>
-          <option value="child">Child Voice</option>
-          <option value="old">Old Voice</option>
+          <option value="male">পুরুষ</option>
+          <option value="female">নারী</option>
+          <option value="boy">বাচ্চা ছেলে</option>
+          <option value="girl">বাচ্চা মেয়ে</option>
+          <option value="oldman">বৃদ্ধ</option>
+          <option value="oldwoman">বৃদ্ধা</option>
         </select>
       </div>
     </div><!-- Speech to Text -->
@@ -41,9 +41,11 @@
   <h2 class="text-2xl font-semibold mb-2">Audio to Text</h2>
   <div class="flex gap-2 flex-wrap">
     <button onclick="startRecognition()" id="record-btn" class="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700">Start Voice Recognition</button>
-    <input type="file" id="audioFile" accept="audio/*" onchange="importAudio()" class="text-white" />
+    <input type="file" id="audioFile" accept="audio/*" onchange="importAudio(event)" class="text-white" />
+    <button onclick="copySTTText()" class="px-4 py-2 bg-yellow-500 text-black rounded-xl hover:bg-yellow-600">Copy Text</button>
   </div>
   <div id="speech-result" class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl min-h-[100px] text-black">Speech text will appear here...</div>
+  <audio id="uploadedAudio" controls class="mt-4 w-full hidden"></audio>
 </div>
 
   </div>  <script>
@@ -55,28 +57,31 @@
       const selected = voiceSelect.value;
 
       const voices = speechSynthesis.getVoices();
+
       if (selected === "male") {
-        utterance.voice = voices.find(v => v.name.includes("Male") || v.name.includes("Google UK English Male")) || null;
+        utterance.voice = voices.find(v => v.name.toLowerCase().includes("male")) || null;
       } else if (selected === "female") {
-        utterance.voice = voices.find(v => v.name.includes("Female") || v.name.includes("Google UK English Female")) || null;
-      } else if (selected === "child") {
+        utterance.voice = voices.find(v => v.name.toLowerCase().includes("female")) || null;
+      } else if (selected === "boy") {
+        utterance.pitch = 1.8;
+        utterance.rate = 1.5;
+      } else if (selected === "girl") {
         utterance.pitch = 2;
-        utterance.rate = 1.4;
-      } else if (selected === "old") {
-        utterance.pitch = 0.5;
-        utterance.rate = 0.8;
+        utterance.rate = 1.6;
+      } else if (selected === "oldman") {
+        utterance.pitch = 0.6;
+        utterance.rate = 0.9;
+      } else if (selected === "oldwoman") {
+        utterance.pitch = 0.7;
+        utterance.rate = 0.9;
       }
 
       utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
     }
 
-    function downloadAudio() {
-      alert("Sorry! Direct audio download is not supported in browser TTS.");
-    }
-
-    function copyText() {
-      const text = document.getElementById("text-input").value;
+    function copySTTText() {
+      const text = document.getElementById("speech-result").textContent;
       navigator.clipboard.writeText(text);
       alert("Text copied!");
     }
@@ -107,8 +112,13 @@
       recognition.start();
     }
 
-    function importAudio() {
-      alert("Audio file import is not supported in browser directly. Use voice input instead.");
+    function importAudio(event) {
+      const audio = document.getElementById("uploadedAudio");
+      const file = event.target.files[0];
+      if (file) {
+        audio.src = URL.createObjectURL(file);
+        audio.classList.remove("hidden");
+      }
     }
 
     // Dynamic Background Change
