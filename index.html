@@ -2,95 +2,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Dream Chaser TTS & STT</title>
+  <title>The Dream Chaser</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
-      animation: bgChange 10s infinite alternate;
-    }
-    @keyframes bgChange {
-      0% { background-color: #ffecd2; }
-      50% { background-color: #fcb69f; }
-      100% { background-color: #ffecd2; }
+      transition: background-color 2s;
     }
     h1 {
       font-size: 3rem;
-      animation: blink 0.5s infinite;
-      color: #ff0055;
+      font-weight: bold;
+      animation: colorChange 1s infinite;
     }
-    @keyframes blink {
-      0% { color: #ff0055; }
-      50% { color: #00d4ff; }
-      100% { color: #ff0055; }
+    h2 {
+      font-size: 2rem;
+      margin-top: -10px;
+      animation: colorChange 1s infinite;
     }
-    #voiceSelector {
-      margin: 20px auto;
+    @keyframes colorChange {
+      0% { color: red; }
+      25% { color: orange; }
+      50% { color: green; }
+      75% { color: blue; }
+      100% { color: violet; }
     }
-    .rainbow {
-      background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbowMove 5s infinite linear;
+    @keyframes rainbow {
+      0% { background-color: #ff0000; }
+      25% { background-color: #00ff00; }
+      50% { background-color: #0000ff; }
+      75% { background-color: #ffff00; }
+      100% { background-color: #ff00ff; }
     }
-    @keyframes rainbowMove {
-      0% { background-position: 0%; }
-      100% { background-position: 100%; }
+    .rainbow-text {
+      animation: colorChange 1s infinite;
+    }
+    .rainbow-bg {
+      animation: rainbow 10s infinite;
+    }
+    #masud-img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 10px auto;
+    }
+    select, button, input {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    #output {
+      white-space: pre-wrap;
+      margin: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      min-height: 100px;
+    }
+    .footer {
+      margin-top: 30px;
+    }
+    .footer p, .footer a {
+      margin: 5px;
+      font-weight: bold;
+    }
+    .rainbow-footer {
+      animation: colorChange 1s infinite;
     }
   </style>
 </head>
-<body>
-  <img src="https://github.com/Termuxmasud404/The-Dream-Chaser-By-Masud/blob/main/masud.jpg?raw=true" alt="Masud Rana" width="150" style="border-radius: 50%; margin-top: 20px;" />
+<body class="rainbow-bg">
+  <img id="masud-img" src="https://github.com/Termuxmasud404/The-Dream-Chaser-By-Masud/blob/main/masud.jpg?raw=true" alt="Masud Rana" />
   <h1>The Dream Chaser</h1>
-  <h2 style="animation: blink 0.3s infinite;">TTS & STT</h2>  <textarea id="textInput" rows="5" cols="50" placeholder="Write something..."></textarea><br />  <select id="voiceSelector">
-    <option value="EXAVITQu4vr4xnSDxMaL">Male Voice 1</option>
-    <option value="MF3mGyEYCl7XYWbV9V6O">Male Voice 2</option>
-    <option value="TxGEqnHWrfWFTfGW9XjX">Male Voice 3</option>
-    <option value="VR6AewLTigWG4xSOukaG">Male Voice 4</option>
-    <option value="pNInz6obpgDQGcFmaJgB">Male Voice 5</option>
-    <option value="21m00Tcm4TlvDq8ikWAM">Female Voice 1</option>
-    <option value="yoZ06aMxZJJ28mfd3POQ">Female Voice 2</option>
-    <option value="LcfcDJNUP1GQjkzn1xUU">Female Voice 3</option>
-    <option value="AZnzlk1XvdvUeBnXmlld">Female Voice 4</option>
-    <option value="onwK4e9ZLuTAKqWW03Fv">Female Voice 5</option>
-  </select><br />
-  <button onclick="speakText()">Play Voice</button>  <footer style="margin-top: 40px;">
+  <h2>TTS & STT</h2>  <input type="file" id="audioFile" accept="audio/*" />
+  <br>
+  <button onclick="startRecognition()">Start Voice Recognition</button>
+  <div id="progress"></div>
+  <div id="output"></div>
+  <button onclick="copyText()">Copy Text</button>  <hr>  <textarea id="text-to-speak" rows="4" cols="50" placeholder="Enter text to speak..."></textarea>  <br>
+  <label for="voiceSelect">Select Voice:</label>
+  <select id="voiceSelect">
+    <option>Male Voice 1</option>
+    <option>Male Voice 2</option>
+    <option>Male Voice 3</option>
+    <option>Male Voice 4</option>
+    <option>Male Voice 5</option>
+    <option>Female Voice 1</option>
+    <option>Female Voice 2</option>
+    <option>Female Voice 3</option>
+    <option>Female Voice 4</option>
+    <option>Female Voice 5</option>
+  </select>
+  <br>
+  <button onclick="speakText()">Play Audio</button>  <div class="footer">
     <a href="https://www.facebook.com/profile.php?id=100078423821878" target="_blank">
-      <button style="background-color: #4267B2; color: white; padding: 10px 20px; border: none; border-radius: 5px;">Visit My Facebook</button>
+      <button style="background: blue; color: white; padding: 10px;">Visit My Facebook</button>
     </a>
-    <p class="rainbow">Developer By Masud Rana</p>
-    <p>&copy; 2025 The Dream Chaser Zone | Created by Termuxmasud404</p>
-  </footer>  <script>
-    async function speakText() {
-      const text = document.getElementById("textInput").value;
-      const voiceId = document.getElementById("voiceSelector").value;
-      const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voiceId, {
-        method: "POST",
-        headers: {
-          "Accept": "audio/mpeg",
-          "Content-Type": "application/json",
-          "xi-api-key": "sk_c5501883612130dc460f665073e846bc0db57a9a2da8d068"
-        },
-        body: JSON.stringify({
-          text: text,
-          model_id: "eleven_monolingual_v1",
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5
-          }
-        })
-      });
+    <p class="rainbow-text">Developer By Masud Rana</p>
+    <p>© 2025 The Dream Chaser Zone | Created by Termuxmasud404</p>
+  </div>  <script>
+    function copyText() {
+      const text = document.getElementById("output").innerText;
+      navigator.clipboard.writeText(text).then(() => alert("Text copied!"));
+    }
 
-      if (!response.ok) {
-        alert("Voice generation failed!");
-        return;
-      }
+    function startRecognition() {
+      const output = document.getElementById("output");
+      const progress = document.getElementById("progress");
+      output.innerText = "Listening...";
+      let count = 0;
+      let interval = setInterval(() => {
+        count += 1;
+        progress.innerText = `Loading: ${count}%`;
+        if (count >= 100) {
+          clearInterval(interval);
+          output.innerText = "This is a sample result from STT API.";
+          progress.innerText = "";
+        }
+      }, 30);
+    }
 
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audio.play();
+    function speakText() {
+      const text = document.getElementById("text-to-speak").value;
+      const voiceOption = document.getElementById("voiceSelect").value;
+      const utterance = new SpeechSynthesisUtterance(text);
+      let voices = window.speechSynthesis.getVoices();
+
+      let matchVoice = voices.find(v =>
+        v.name.toLowerCase().includes(voiceOption.toLowerCase().split(" ")[1])
+      );
+
+      if (matchVoice) utterance.voice = matchVoice;
+
+      window.speechSynthesis.speak(utterance);
     }
   </script></body>
 </html>
