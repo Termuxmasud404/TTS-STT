@@ -7,25 +7,25 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      animation: backgroundColorChange 10s infinite alternate;
+      background: linear-gradient(120deg, #fce4ec, #e0f7fa, #ede7f6, #e8f5e9);
+      background-size: 600% 600%;
+      animation: gradientBG 20s ease infinite;
       text-align: center;
       padding: 20px;
     }
-    @keyframes backgroundColorChange {
-      0% { background-color: #f6f9fc; }
-      25% { background-color: #e0f7fa; }
-      50% { background-color: #fce4ec; }
-      75% { background-color: #ede7f6; }
-      100% { background-color: #e8f5e9; }
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
     }
     h1 {
       font-size: 48px;
       font-weight: bold;
-      animation: rainbowBlink 0.8s infinite;
+      animation: rainbowBlink 1s infinite;
     }
     #subtitle {
       font-size: 24px;
-      animation: rainbowBlink 0.8s infinite;
+      animation: rainbowBlink 1s infinite;
     }
     @keyframes rainbowBlink {
       0% { color: red; }
@@ -39,11 +39,23 @@
       width: 90%;
       height: 100px;
       font-size: 18px;
+      margin: 10px auto;
     }
     select, button, input[type="file"] {
-      padding: 10px;
+      padding: 10px 20px;
       margin: 10px;
       font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #00796b;
+      color: white;
+    }
+    button:active {
+      background-color: #004d40;
     }
     footer {
       margin-top: 40px;
@@ -57,8 +69,6 @@
     .button-colored {
       background-color: #6200ea;
       color: white;
-      border: none;
-      border-radius: 5px;
     }
   </style>
 </head>
@@ -67,15 +77,10 @@
   <h1>The Dream Chaser</h1>
   <div id="subtitle">TTS & STT</div>  <h2>Text to Speech (TTS)</h2>
   <textarea id="ttsText" placeholder="Write something..."></textarea><br />
-  <select id="voiceAPI">
-    <option value="male1">Male Voice 1</option>
-    <option value="male2">Male Voice 2</option>
-    <option value="female1">Female Voice 1</option>
-    <option value="female2">Female Voice 2</option>
-  </select><br />
-  <button onclick="playTTS()" class="button-colored">Play</button>  <h2>Speech to Text (STT)</h2>
-  <input type="file" accept="audio/*" id="audioFile" />
-  <button onclick="startRecognition()" class="button-colored">Start Voice Recognition</button><br />
+  <select id="voiceSelect"></select><br />
+  <button onclick="speakText()" class="button-colored">Play</button>  <h2>Speech to Text (STT)</h2>
+  <input type="file" accept="audio/*" id="audioFile" /><br />
+  <button onclick="startRecognition()" class="button-colored">Start Voice Recognition</button>
   <textarea id="sttResult" placeholder="Recognized text..." readonly></textarea><br />
   <button onclick="copyText()" class="button-colored" style="float: right;">Copy Text</button>  <footer>
     <a href="https://www.facebook.com/profile.php?id=100078423821878" target="_blank">
@@ -84,53 +89,53 @@
     <div id="developer">Developer By Masud Rana</div>
     <div>© 2025 The Dream Chaser Zone | Created by Termuxmasud404</div>
   </footer>  <script>
-    function playTTS() {
-      const text = document.getElementById("ttsText").value;
-      const voice = document.getElementById("voiceAPI").value;
+    const voiceSelect = document.getElementById('voiceSelect');
 
-      let voiceUrl;
+    function populateVoices() {
+      const voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      voices.forEach((voice) => {
+        const option = document.createElement('option');
+        option.value = voice.name;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+      });
+    }
 
-      switch (voice) {
-        case "male1":
-          voiceUrl = `https://api.ttsmaker.com/v1/voice/male1?text=${encodeURIComponent(text)}`;
-          break;
-        case "male2":
-          voiceUrl = `https://api.ttsmaker.com/v1/voice/male2?text=${encodeURIComponent(text)}`;
-          break;
-        case "female1":
-          voiceUrl = `https://api.ttsmaker.com/v1/voice/female1?text=${encodeURIComponent(text)}`;
-          break;
-        case "female2":
-          voiceUrl = `https://api.ttsmaker.com/v1/voice/female2?text=${encodeURIComponent(text)}`;
-          break;
-        default:
-          voiceUrl = "";
-      }
+    window.speechSynthesis.onvoiceschanged = populateVoices;
+    populateVoices();
 
-      const audio = new Audio(voiceUrl);
-      audio.play();
+    function speakText() {
+      const text = document.getElementById('ttsText').value;
+      const utterance = new SpeechSynthesisUtterance(text);
+      const selectedVoiceName = voiceSelect.value;
+      const voices = speechSynthesis.getVoices();
+      const selectedVoice = voices.find(v => v.name === selectedVoiceName);
+      if (selectedVoice) utterance.voice = selectedVoice;
+      speechSynthesis.speak(utterance);
     }
 
     function startRecognition() {
-      const file = document.getElementById("audioFile").files[0];
+      const file = document.getElementById('audioFile').files[0];
       if (!file) return alert("Please upload an audio file");
 
-      document.getElementById("sttResult").value = "Listening...";
+      document.getElementById('sttResult').value = "Listening...";
       let progress = 0;
       const interval = setInterval(() => {
-        progress += 10;
-        document.getElementById("sttResult").value = `Processing: ${progress}%`;
+        progress += 5;
+        document.getElementById('sttResult').value = `Processing: ${progress}%`;
         if (progress >= 100) clearInterval(interval);
       }, 200);
 
+      // Placeholder for real STT API call
       setTimeout(() => {
         clearInterval(interval);
-        document.getElementById("sttResult").value = "(Simulated) Hello, this is the transcribed audio text.";
-      }, 2500);
+        document.getElementById('sttResult').value = "(Simulated) Hello, this is the transcribed audio text.";
+      }, 4000);
     }
 
     function copyText() {
-      const result = document.getElementById("sttResult");
+      const result = document.getElementById('sttResult');
       result.select();
       document.execCommand("copy");
     }
