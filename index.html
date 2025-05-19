@@ -19,13 +19,13 @@
       100% { background-color: #e8f5e9; }
     }
     h1 {
-      font-size: 60px;
+      font-size: 48px;
       font-weight: bold;
-      animation: rainbowBlink 0.5s infinite;
+      animation: rainbowBlink 0.8s infinite;
     }
     #subtitle {
-      font-size: 28px;
-      animation: rainbowBlink 1s infinite;
+      font-size: 24px;
+      animation: rainbowBlink 0.8s infinite;
     }
     @keyframes rainbowBlink {
       0% { color: red; }
@@ -67,9 +67,14 @@
   <h1>The Dream Chaser</h1>
   <div id="subtitle">TTS & STT</div>  <h2>Text to Speech (TTS)</h2>
   <textarea id="ttsText" placeholder="Write something..."></textarea><br />
-  <select id="voiceSelect"></select><br />
-  <button onclick="speakText()" class="button-colored">Play</button>  <h2>Speech to Text (STT)</h2>
-  <input type="file" accept="audio/*" id="audioFile" /><br />
+  <select id="voiceAPI">
+    <option value="male1">Male Voice 1</option>
+    <option value="male2">Male Voice 2</option>
+    <option value="female1">Female Voice 1</option>
+    <option value="female2">Female Voice 2</option>
+  </select><br />
+  <button onclick="playTTS()" class="button-colored">Play</button>  <h2>Speech to Text (STT)</h2>
+  <input type="file" accept="audio/*" id="audioFile" />
   <button onclick="startRecognition()" class="button-colored">Start Voice Recognition</button><br />
   <textarea id="sttResult" placeholder="Recognized text..." readonly></textarea><br />
   <button onclick="copyText()" class="button-colored" style="float: right;">Copy Text</button>  <footer>
@@ -79,52 +84,53 @@
     <div id="developer">Developer By Masud Rana</div>
     <div>© 2025 The Dream Chaser Zone | Created by Termuxmasud404</div>
   </footer>  <script>
-    const voiceSelect = document.getElementById('voiceSelect');
+    function playTTS() {
+      const text = document.getElementById("ttsText").value;
+      const voice = document.getElementById("voiceAPI").value;
 
-    function populateVoices() {
-      const voices = speechSynthesis.getVoices();
-      voiceSelect.innerHTML = '';
-      voices.filter(v => v.lang.startsWith('en') || v.lang.startsWith('bn')).forEach((voice, index) => {
-        const option = document.createElement('option');
-        option.value = voice.name;
-        option.text = `${voice.name} (${voice.lang})`;
-        voiceSelect.appendChild(option);
-      });
-    }
+      let voiceUrl;
 
-    populateVoices();
-    window.speechSynthesis.onvoiceschanged = populateVoices;
+      switch (voice) {
+        case "male1":
+          voiceUrl = `https://api.ttsmaker.com/v1/voice/male1?text=${encodeURIComponent(text)}`;
+          break;
+        case "male2":
+          voiceUrl = `https://api.ttsmaker.com/v1/voice/male2?text=${encodeURIComponent(text)}`;
+          break;
+        case "female1":
+          voiceUrl = `https://api.ttsmaker.com/v1/voice/female1?text=${encodeURIComponent(text)}`;
+          break;
+        case "female2":
+          voiceUrl = `https://api.ttsmaker.com/v1/voice/female2?text=${encodeURIComponent(text)}`;
+          break;
+        default:
+          voiceUrl = "";
+      }
 
-    function speakText() {
-      const text = document.getElementById('ttsText').value;
-      const utterance = new SpeechSynthesisUtterance(text);
-      const selectedVoiceName = voiceSelect.value;
-      const voices = speechSynthesis.getVoices();
-      const selectedVoice = voices.find(v => v.name === selectedVoiceName);
-      if (selectedVoice) utterance.voice = selectedVoice;
-      speechSynthesis.speak(utterance);
+      const audio = new Audio(voiceUrl);
+      audio.play();
     }
 
     function startRecognition() {
-      const file = document.getElementById('audioFile').files[0];
+      const file = document.getElementById("audioFile").files[0];
       if (!file) return alert("Please upload an audio file");
 
-      document.getElementById('sttResult').value = "Listening...";
+      document.getElementById("sttResult").value = "Listening...";
       let progress = 0;
       const interval = setInterval(() => {
-        progress += 5;
-        document.getElementById('sttResult').value = `Processing: ${progress}%`;
+        progress += 10;
+        document.getElementById("sttResult").value = `Processing: ${progress}%`;
         if (progress >= 100) clearInterval(interval);
       }, 200);
 
       setTimeout(() => {
         clearInterval(interval);
-        document.getElementById('sttResult').value = "(Simulated) Hello, this is the transcribed audio text.";
-      }, 4000);
+        document.getElementById("sttResult").value = "(Simulated) Hello, this is the transcribed audio text.";
+      }, 2500);
     }
 
     function copyText() {
-      const result = document.getElementById('sttResult');
+      const result = document.getElementById("sttResult");
       result.select();
       document.execCommand("copy");
     }
