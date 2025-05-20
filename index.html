@@ -1,145 +1,146 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Dream Chaser TTS & STT</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
       text-align: center;
       padding: 20px;
+    }
+    @keyframes rainbow {
+      0% { background-color: red; }
+      20% { background-color: orange; }
+      40% { background-color: yellow; }
+      60% { background-color: green; }
+      80% { background-color: blue; }
+      100% { background-color: violet; }
     }
     h1 {
       font-size: 48px;
       font-weight: bold;
-      animation: rainbowBlink 1.5s infinite;
+      animation: rainbow 5s infinite alternate;
+      margin-bottom: 10px;
     }
-    @keyframes rainbowBlink {
-      0% { color: red; }
-      25% { color: orange; }
-      50% { color: green; }
-      75% { color: blue; }
-      100% { color: violet; }
+    #subtitle {
+      font-size: 24px;
+      font-weight: bold;
     }
-    textarea, select, button, input[type="file"] {
-      margin: 10px;
-      font-size: 16px;
+    .rainbow-box {
+      background-color: white;
       border-radius: 10px;
-      border: 2px solid #7e57c2;
-      padding: 10px;
+      padding: 15px;
+      margin: 20px auto;
+      width: 90%;
+      max-width: 600px;
+      animation: rainbow 10s infinite alternate;
     }
     textarea {
       width: 90%;
       height: 100px;
-      background-color: #f8f4ff;
+      font-size: 18px;
+      margin-bottom: 10px;
     }
     button {
-      background-color: #7b1fa2;
-      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background-color 0.3s ease;
     }
     button:hover {
-      background-color: #4a0072;
-    }
-    .section {
-      background: #ede7f6;
-      margin: 20px auto;
-      padding: 20px;
-      width: 90%;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: #6200ea;
+      color: white;
     }
     footer {
-      margin-top: 30px;
+      margin-top: 40px;
+      font-size: 16px;
+      color: #333;
     }
     #developer {
       font-weight: bold;
-      animation: rainbowBlink 2s infinite;
+      animation: rainbow 2s infinite alternate;
     }
-    #profile-pic {
-      width: 150px;
+    .button-colored {
+      background-color: #03a9f4;
+      color: white;
+    }
+    .logo-img {
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      border: 4px solid #7b1fa2;
-      margin-top: 20px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
+  <img src="https://github.com/Termuxmasud404/The-Dream-Chaser-By-Masud/blob/main/masud.jpg?raw=true" class="logo-img" alt="Masud Rana" />
   <h1>The Dream Chaser</h1>
-  <div class="section">
+  <div id="subtitle">TTS & STT</div>  <div class="rainbow-box">
     <h2>Text to Speech (TTS)</h2>
-    <textarea id="ttsText" placeholder="Write something..."></textarea><br/>
-    <select id="voiceSelect">
-      <option value="male">Male Voice</option>
-      <option value="female">Female Voice</option>
-    </select><br/>
-    <button onclick="speakText()">Play</button>
-    <button onclick="downloadSpeech()">Download</button>
-  </div>  <div class="section">
+    <textarea id="ttsText" placeholder="Write something..."></textarea><br />
+    <button onclick="speakText()" class="button-colored">Play</button>
+    <button onclick="downloadTTS()" class="button-colored">Download</button>
+  </div>  <div class="rainbow-box">
     <h2>Speech to Text (STT)</h2>
-    <input type="file" accept="audio/*" id="audioFile" onchange="playUploadedAudio()"/><br/>
-    <button onclick="startRecognition()">Start Voice Recognition</button><br/>
-    <textarea id="sttResult" placeholder="Recognized text..." readonly></textarea><br/>
-    <button onclick="copyText()">Copy Text</button>
-    <br/><br/>
-    <audio id="uploadedAudio" controls style="margin-top:10px;"></audio>
-  </div>  <img src="masud-profile.jpg" id="profile-pic" alt="Masud Rana">  <footer>
+    <input type="file" accept="audio/*" id="audioFile" /><br />
+    <button onclick="startRecognition()" class="button-colored">Start Voice Recognition</button>
+    <button onclick="playAudio()" class="button-colored">Play Audio</button><br />
+    <textarea id="sttResult" placeholder="Recognized text..." readonly></textarea>
+  </div>  <footer>
     <a href="https://www.facebook.com/profile.php?id=100078423821878" target="_blank">
-      <button>Visit My Facebook</button>
-    </a><br/>
+      <button class="button-colored">Visit My Facebook</button>
+    </a><br />
     <div id="developer">Developer By Masud Rana</div>
     <div>© 2025 The Dream Chaser Zone | Created by Termuxmasud404</div>
   </footer>  <script>
     function speakText() {
       const text = document.getElementById('ttsText').value;
-      const voiceType = document.getElementById('voiceSelect').value;
       const utterance = new SpeechSynthesisUtterance(text);
+      // Use a professional sounding male voice if available
       const voices = speechSynthesis.getVoices();
-      let selectedVoice;
-      if (voiceType === 'male') {
-        selectedVoice = voices.find(voice => voice.name.toLowerCase().includes('male') || voice.name.toLowerCase().includes('david'));
-      } else {
-        selectedVoice = voices.find(voice => voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('zira'));
-      }
-      if (selectedVoice) utterance.voice = selectedVoice;
+      const maleVoice = voices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david'));
+      if (maleVoice) utterance.voice = maleVoice;
       speechSynthesis.speak(utterance);
     }
 
-    function playUploadedAudio() {
-      const file = document.getElementById('audioFile').files[0];
-      const audio = document.getElementById('uploadedAudio');
-      if (file) {
-        const url = URL.createObjectURL(file);
-        audio.src = url;
-        audio.load();
-        audio.play();
-      }
-    }
-
     function startRecognition() {
-      const resultBox = document.getElementById('sttResult');
-      resultBox.value = "Recognizing... (simulated)";
+      const file = document.getElementById('audioFile').files[0];
+      if (!file) return alert("Please upload an audio file");
+
+      document.getElementById('sttResult').value = "Listening...";
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 5;
+        document.getElementById('sttResult').value = `Processing: ${progress}%`;
+        if (progress >= 100) clearInterval(interval);
+      }, 200);
+
+      // Simulated STT result (replace with real STT API later)
       setTimeout(() => {
-        resultBox.value = "(Simulated) This is your converted audio to text result.";
-      }, 3000);
+        clearInterval(interval);
+        document.getElementById('sttResult').value = "(Simulated) Hello, this is the transcribed audio text.";
+      }, 4000);
     }
 
-    function copyText() {
-      const textArea = document.getElementById('sttResult');
-      textArea.select();
-      document.execCommand("copy");
+    function playAudio() {
+      const fileInput = document.getElementById('audioFile');
+      if (fileInput.files.length === 0) return alert("Please upload an audio file first.");
+      const file = fileInput.files[0];
+      const audio = new Audio(URL.createObjectURL(file));
+      audio.play();
     }
 
-    function downloadSpeech() {
-      alert("Download feature requires real TTS API. Please integrate with backend or API service.");
+    function downloadTTS() {
+      alert("To enable download, a real TTS API with audio output is needed.");
     }
 
-    // Load voices initially
-    window.speechSynthesis.onvoiceschanged = () => {
-      speechSynthesis.getVoices();
-    };
+    // Trigger voice load (for some browsers)
+    window.speechSynthesis.onvoiceschanged = () => {};
   </script></body>
 </html>
